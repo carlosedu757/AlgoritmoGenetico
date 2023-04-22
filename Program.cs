@@ -16,10 +16,13 @@ namespace AlgoritmoGenetico
 
             while(population.Count < 4)
             {
-                int numAleatorio = new Random().Next(-10, 11);
+                // ESCOLHER POPULAÇÃO ALEATORIA
+                // int numAleatorio = new Random().Next(-10, 11);
 
-                if(!population.Exists(x => x == numAleatorio))
-                    population.Add(numAleatorio);
+                // if(!population.Exists(x => x == numAleatorio))
+                //     population.Add(numAleatorio);
+
+                population.Add(population.Count - 1);
             }
 
 
@@ -41,15 +44,16 @@ namespace AlgoritmoGenetico
                     bool negativo = population[k - 1] < 0;
                     int valorAbsoluto = Math.Abs(population[k - 1]);
 
-                    string numeroBinario = Convert.ToString(valorAbsoluto, 2).PadLeft(4, '0');
+                    string numeroBinario = Convert.ToString(valorAbsoluto, 2).PadLeft(5, '0');
 
                     int fx = ProgramTRA.FuncaoQuadratica(population[k - 1]);
 
                     if (negativo)
-                        numeroBinario = "1" + numeroBinario;
-                    else
-                        numeroBinario = "0" + numeroBinario;
-
+                    {
+                        // CONVERSÃO INTEIRO NEGATIVO -> BINARIO
+                        numeroBinario = Convert.ToString(Convert.ToInt32(numeroBinario, 2) - 1, 2).PadLeft(5, '0');
+                        numeroBinario = new string(numeroBinario.Select(bit => bit == '0' ? '1' : '0').ToArray());
+                    }
                     aptos.Add((fx, numeroBinario));
 
                     Console.WriteLine(k + " | " + numeroBinario + " | " + population[k - 1] + " | " + fx);
@@ -77,17 +81,23 @@ namespace AlgoritmoGenetico
                 //preenchimento de nova geração
                 foreach (string mutacao in mutacoes)
                 {
-                    int numerox = Convert.ToInt32(mutacao[1..5], 2);
+                    int numerox;
+                    // CONVERSÃO BINARIO -> INTEIRO NEGATIVO
                     if (mutacao[0] == '1')
-                        numerox = -numerox;
-
+                    {
+                        string novoBinario = new string(mutacao.Select(bit => bit == '0' ? '1' : '0').ToArray());
+                        novoBinario = Convert.ToString(Convert.ToInt32(novoBinario, 2) + 1, 2).PadLeft(5, '0');
+                        numerox = -Convert.ToInt32(novoBinario, 2);
+                    }
+                    else
+                        numerox = Convert.ToInt32(mutacao, 2);
                     population.Add(numerox);
                 }
 
                 Console.WriteLine("-----------------------------------------------------");
                 Console.WriteLine("\n");
                 i++;
-            }while(i <= 20);
+            }while(i <= 5);
         }
     }
 }

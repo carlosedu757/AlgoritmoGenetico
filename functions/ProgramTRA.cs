@@ -10,19 +10,14 @@ namespace AlgoritmoGenetico.functions
     {
         public static int FuncaoQuadratica(int n)
         {
-            return ((int)(Math.Pow(n, 2) - (3 * n) + 4));
-        }
-
-        public static decimal FuncaoProbabilidade(int n, decimal divisor)
-        {
-            return (1 - (n / divisor));
+            return ((2 * n) - 3);
         }
 
         public static List<(int, string)> SelecaoTorneio(List<(int, string)> aptos)
         {
             List<(int, string)> maisAptos = new List<(int, string)>();
 
-            while (maisAptos.Count < 2)
+            while (maisAptos.Count < 4)
             {
                 int index1 = new Random().Next(0, 4);
                 int index2 = new Random().Next(0, 4);
@@ -35,7 +30,7 @@ namespace AlgoritmoGenetico.functions
                 (int, string) aptosAleatorio1 = aptos[index1];
                 (int, string) aptosAleatorio2 = aptos[index2];
 
-                if (aptosAleatorio1.Item1 <= aptosAleatorio2.Item1)
+                if (Math.Abs(aptosAleatorio1.Item1) <= Math.Abs(aptosAleatorio2.Item1))
                     maisAptos.Add(aptosAleatorio1);
                 else
                     maisAptos.Add(aptosAleatorio2);
@@ -47,23 +42,24 @@ namespace AlgoritmoGenetico.functions
         public static List<string> Crossover(List<(int, string)> maisAptos)
         {
             List<string> filhos = new List<string>();
+
             while(filhos.Count < 4)
             {
                 int moeda = new Random().Next(1, 6);
                 if (moeda == 4 || moeda == 5)
                 {
-                    filhos.Add(maisAptos[0].Item2);
-                    filhos.Add(maisAptos[1].Item2);
-                    Console.WriteLine(maisAptos[0].Item2 + " ---> " + maisAptos[0].Item2);
-                    Console.WriteLine(maisAptos[1].Item2 + " ---> " + maisAptos[1].Item2);
+                    filhos.Add(maisAptos[filhos.Count].Item2);
+                    Console.WriteLine(maisAptos[filhos.Count - 1].Item2 + " ---> " + maisAptos[filhos.Count - 1].Item2);
+                    filhos.Add(maisAptos[filhos.Count].Item2);
+                    Console.WriteLine(maisAptos[filhos.Count - 1].Item2 + " ---> " + maisAptos[filhos.Count - 1].Item2);
                 }
                 else
                 {
-                    int corte = new Random().Next(2, 4);
-                    filhos.Add(maisAptos[0].Item2[..corte] + maisAptos[1].Item2[corte..5]);
-                    filhos.Add(maisAptos[1].Item2[..corte] + maisAptos[0].Item2[corte..5]);
-                    Console.WriteLine(maisAptos[0].Item2[..corte] + "|" + maisAptos[0].Item2[corte..5] + " ---> " + maisAptos[0].Item2[..corte] + maisAptos[1].Item2[corte..5]);
-                    Console.WriteLine(maisAptos[1].Item2[..corte] + "|" + maisAptos[1].Item2[corte..5] + " ---> " + maisAptos[1].Item2[..corte] + maisAptos[0].Item2[corte..5]);
+                    int corte = new Random().Next(1, 5);
+                    filhos.Add(maisAptos[filhos.Count].Item2[..corte] + maisAptos[filhos.Count + 1].Item2[corte..5]);
+                    Console.WriteLine(maisAptos[filhos.Count - 1].Item2[..corte] + "|" + maisAptos[filhos.Count - 1].Item2[corte..5] + " ---> " + maisAptos[filhos.Count - 1].Item2[..corte] + maisAptos[filhos.Count].Item2[corte..5]);
+                    filhos.Add(maisAptos[filhos.Count].Item2[..corte] + maisAptos[filhos.Count - 1].Item2[corte..5]);
+                    Console.WriteLine(maisAptos[filhos.Count - 1].Item2[..corte] + "|" + maisAptos[filhos.Count - 1].Item2[corte..5] + " ---> " + maisAptos[filhos.Count - 1].Item2[..corte] + maisAptos[filhos.Count - 2].Item2[corte..5]);
                 }
             }
             return filhos;
@@ -80,7 +76,7 @@ namespace AlgoritmoGenetico.functions
                 for (int j = 0; j < 5; j++)
                 {
                     int random = new Random().Next(0, 100);
-
+                    
                     if (random == 1)
                     {
                         sb.Remove(j, 1);
@@ -90,7 +86,10 @@ namespace AlgoritmoGenetico.functions
                             sb.Insert(j, '0');
                     }
                 }
-                mutacoes.Add(sb.ToString());
+                if (Convert.ToInt32(sb.ToString(), 2) <= 10 && Convert.ToInt32(sb.ToString(), 2) >= -10)
+                    mutacoes.Add(sb.ToString());
+                else
+                    mutacoes.Add(crossover);
             }
 
             return mutacoes;
