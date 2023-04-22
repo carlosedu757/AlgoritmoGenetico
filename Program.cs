@@ -26,14 +26,14 @@ namespace AlgoritmoGenetico
             int i = 0;
             do
             {
-                List<(decimal, string)> probabilidades = new List<(decimal, string)>();
+                List<(int, string)> aptos = new List<(int, string)>();
                 Console.WriteLine("-----------------------------------------------------");
                 if (i == 0)
                     Console.WriteLine("Populacao Inicial");
                 else
                     Console.WriteLine(i + "° GERACAO");
 
-                Console.WriteLine("Cromossomo | x | f(x) | Prob. Seleção");
+                Console.WriteLine("Cromossomo | x | f(x) ");
 
                 for (int k = 1; k <= 4; k++)
                 {
@@ -44,61 +44,33 @@ namespace AlgoritmoGenetico
                     string numeroBinario = Convert.ToString(valorAbsoluto, 2).PadLeft(4, '0');
 
                     int fx = ProgramTRA.FuncaoQuadratica(population[k - 1]);
-                    int fxSoma = population.Select(x => ProgramTRA.FuncaoQuadratica(x)).Sum();
-                    decimal probabilidade = Math.Round(ProgramTRA.FuncaoProbabilidade(fx, (decimal)fxSoma) * 100, 2);
 
                     if (negativo)
                         numeroBinario = "1" + numeroBinario;
                     else
                         numeroBinario = "0" + numeroBinario;
 
-                    probabilidades.Add((probabilidade, numeroBinario));
+                    aptos.Add((fx, numeroBinario));
 
-                    Console.WriteLine(k + " | " + numeroBinario + " | " + population[k - 1] + " | " + fx + " | " + probabilidade + "%");
+                    Console.WriteLine(k + " | " + numeroBinario + " | " + population[k - 1] + " | " + fx);
                 }
 
                 Console.WriteLine("\nCRIAÇÃO DE UMA NOVA GERAÇÃO...\n");
 
-                List<(decimal, string)> maioresProbabilidades = probabilidades.OrderByDescending(tupla => tupla.Item1).Take(2).ToList();
+                List<(int, string)> maisAptos = ProgramTRA.SelecaoTorneio(aptos); // SELECAO POR TORNEIO
 
                 Console.WriteLine("CROSSOVER\n");
 
-                List<string> crossovers = new List<string>();
+                List<string> crossovers = ProgramTRA.Crossover(maisAptos);
 
-                crossovers.Add(maioresProbabilidades[0].Item2[..2] + maioresProbabilidades[1].Item2[2..5]);
-                crossovers.Add(maioresProbabilidades[1].Item2[..2] + maioresProbabilidades[0].Item2[2..5]);
-
-                crossovers.Add(maioresProbabilidades[1].Item2[..3] + maioresProbabilidades[0].Item2[3..5]);
-                crossovers.Add(maioresProbabilidades[0].Item2[..3] + maioresProbabilidades[1].Item2[3..5]);
-
-                Console.WriteLine("1 - " + maioresProbabilidades[0].Item2[..2] + "|" + maioresProbabilidades[0].Item2[2..5] + " ---> " + crossovers[0]);
-                Console.WriteLine("2 - " + maioresProbabilidades[1].Item2[..2] + "|" + maioresProbabilidades[1].Item2[2..5] + " ---> " + crossovers[1]);
-                Console.WriteLine("3 - " + maioresProbabilidades[1].Item2[..3] + "|" + maioresProbabilidades[1].Item2[3..5] + " ---> " + crossovers[2]);
-                Console.WriteLine("4 - " + maioresProbabilidades[0].Item2[..3] + "|" + maioresProbabilidades[0].Item2[3..5] + " ---> " + crossovers[3]);
+                Console.WriteLine("1 - " + maisAptos[0].Item2[..2] + "|" + maisAptos[0].Item2[2..5] + " ---> " + crossovers[0]);
+                Console.WriteLine("2 - " + maisAptos[1].Item2[..2] + "|" + maisAptos[1].Item2[2..5] + " ---> " + crossovers[1]);
+                Console.WriteLine("3 - " + maisAptos[1].Item2[..3] + "|" + maisAptos[1].Item2[3..5] + " ---> " + crossovers[2]);
+                Console.WriteLine("4 - " + maisAptos[0].Item2[..3] + "|" + maisAptos[0].Item2[3..5] + " ---> " + crossovers[3]);
 
                 Console.WriteLine("\nMUTACAO\n");
 
-                List<string> mutacoes = new List<string>();
-
-                foreach (string crossover in crossovers)
-                {
-                    StringBuilder sb = new StringBuilder(crossover);
-
-                    for(int j = 0; j < 5; j++)
-                    {
-                        int random = new Random().Next(1, 100);
-
-                        if (random == 1)
-                        {
-                            sb.Remove(j, 1); // remove o primeiro caractere
-                            if (crossover[j] == '0')
-                                sb.Insert(j, '1'); // insere 'E' no início da string
-                            else
-                                sb.Insert(j, '0');
-                        }
-                    }
-                    mutacoes.Add(sb.ToString());
-                }
+                List<string> mutacoes = ProgramTRA.Mutacoes(crossovers);
 
                 Console.WriteLine("1 - " + crossovers[0] + " ---> " + mutacoes[0]);
                 Console.WriteLine("2 - " + crossovers[1] + " ---> " + mutacoes[1]);
@@ -106,7 +78,6 @@ namespace AlgoritmoGenetico
                 Console.WriteLine("4 - " + crossovers[3] + " ---> " + mutacoes[3]);
 
                 population.Clear(); // Limpar lista de população para preencher com nova geração
-
 
                 //preenchimento de nova geração
                 foreach (string mutacao in mutacoes)
@@ -121,7 +92,7 @@ namespace AlgoritmoGenetico
                 Console.WriteLine("-----------------------------------------------------");
                 Console.WriteLine("\n");
                 i++;
-            }while(i <= 20);
+            }while(i <= 5);
         }
     }
 }
