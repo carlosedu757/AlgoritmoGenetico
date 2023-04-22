@@ -16,7 +16,7 @@ namespace AlgoritmoGenetico
 
             while(population.Count < 4)
             {
-                int numAleatorio = new Random().Next(-10, 10);
+                int numAleatorio = new Random().Next(-10, 11);
 
                 if(!population.Exists(x => x == numAleatorio))
                     population.Add(numAleatorio);
@@ -63,11 +63,6 @@ namespace AlgoritmoGenetico
 
                 List<string> crossovers = ProgramTRA.Crossover(maisAptos);
 
-                Console.WriteLine("1 - " + maisAptos[0].Item2[..2] + "|" + maisAptos[0].Item2[2..5] + " ---> " + crossovers[0]);
-                Console.WriteLine("2 - " + maisAptos[1].Item2[..2] + "|" + maisAptos[1].Item2[2..5] + " ---> " + crossovers[1]);
-                Console.WriteLine("3 - " + maisAptos[1].Item2[..3] + "|" + maisAptos[1].Item2[3..5] + " ---> " + crossovers[2]);
-                Console.WriteLine("4 - " + maisAptos[0].Item2[..3] + "|" + maisAptos[0].Item2[3..5] + " ---> " + crossovers[3]);
-
                 Console.WriteLine("\nMUTACAO\n");
 
                 List<string> mutacoes = ProgramTRA.Mutacoes(crossovers);
@@ -92,7 +87,7 @@ namespace AlgoritmoGenetico
                 Console.WriteLine("-----------------------------------------------------");
                 Console.WriteLine("\n");
                 i++;
-            }while(i <= 5);
+            }while(i <= 20);
         }
     }
 }

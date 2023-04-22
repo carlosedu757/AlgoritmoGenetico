@@ -24,12 +24,12 @@ namespace AlgoritmoGenetico.functions
 
             while (maisAptos.Count < 2)
             {
-                int index1 = new Random().Next(1, 4);
-                int index2 = new Random().Next(1, 4);
+                int index1 = new Random().Next(0, 4);
+                int index2 = new Random().Next(0, 4);
 
                 while (index1 == index2) // verificando se os números gerados são iguais
                 {
-                    index2 = new Random().Next(1, 4); // gerando um novo número aleatório para index2
+                    index2 = new Random().Next(0, 4); // gerando um novo número aleatório para index2
                 }
 
                 (int, string) aptosAleatorio1 = aptos[index1];
@@ -46,15 +46,27 @@ namespace AlgoritmoGenetico.functions
 
         public static List<string> Crossover(List<(int, string)> maisAptos)
         {
-            List<string> crossovers = new List<string>();
-
-            crossovers.Add(maisAptos[0].Item2[..2] + maisAptos[1].Item2[2..5]);
-            crossovers.Add(maisAptos[1].Item2[..2] + maisAptos[0].Item2[2..5]);
-
-            crossovers.Add(maisAptos[1].Item2[..3] + maisAptos[0].Item2[3..5]);
-            crossovers.Add(maisAptos[0].Item2[..3] + maisAptos[1].Item2[3..5]);
-
-            return crossovers;
+            List<string> filhos = new List<string>();
+            while(filhos.Count < 4)
+            {
+                int moeda = new Random().Next(1, 6);
+                if (moeda == 4 || moeda == 5)
+                {
+                    filhos.Add(maisAptos[0].Item2);
+                    filhos.Add(maisAptos[1].Item2);
+                    Console.WriteLine(maisAptos[0].Item2 + " ---> " + maisAptos[0].Item2);
+                    Console.WriteLine(maisAptos[1].Item2 + " ---> " + maisAptos[1].Item2);
+                }
+                else
+                {
+                    int corte = new Random().Next(2, 4);
+                    filhos.Add(maisAptos[0].Item2[..corte] + maisAptos[1].Item2[corte..5]);
+                    filhos.Add(maisAptos[1].Item2[..corte] + maisAptos[0].Item2[corte..5]);
+                    Console.WriteLine(maisAptos[0].Item2[..corte] + "|" + maisAptos[0].Item2[corte..5] + " ---> " + maisAptos[0].Item2[..corte] + maisAptos[1].Item2[corte..5]);
+                    Console.WriteLine(maisAptos[1].Item2[..corte] + "|" + maisAptos[1].Item2[corte..5] + " ---> " + maisAptos[1].Item2[..corte] + maisAptos[0].Item2[corte..5]);
+                }
+            }
+            return filhos;
         }
 
         public static List<string> Mutacoes(List<string> crossovers)
@@ -67,7 +79,7 @@ namespace AlgoritmoGenetico.functions
 
                 for (int j = 0; j < 5; j++)
                 {
-                    int random = new Random().Next(1, 100);
+                    int random = new Random().Next(0, 100);
 
                     if (random == 1)
                     {
